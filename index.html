@@ -1,19 +1,970 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
-  video { width: 100%; height: 100%; object-fit: cover; display: block; }
-</style>
-</head>
-<body>
-  <video id="v" autoplay muted loop playsinline></video>
+<!doctype html>
+<html lang="tr"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usta Eller Montaj | İstanbul Anadolu Yakası Montaj, Tadilat ve Elektrik Hizmetleri</title>
+  <meta name="description" content="Usta Eller Montaj; Pendik, Kartal, Maltepe, Ataşehir ve Tuzla'da montaj, tadilat, elektrik, mobilya ve ankastre kurulum hizmetleri sunar.">
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #17191b;
+      --ink2: #25292d;
+      --yellow: #ffc400;
+      --soft: #f3f4f1;
+      --line: #e4e6e1;
+      --muted: #596067;
+      --whatsapp: #25d366;
+      --wrap: 1240px;
+      --gutter: clamp(18px, 4vw, 40px);
+      --ease: cubic-bezier(.22,.7,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; max-width: 100%; -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #fff;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    img { max-width: 100%; }
+    a { text-decoration: none; }
+    html, body, .site-shell { width: 100%; max-width: 100%; min-width: 0; }
+    .site-shell { margin: 0; overflow: hidden; }
+    main, .section, .top-slider, footer { width: 100%; max-width: 100%; }
+    .site-width { width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+    :focus-visible { outline: 3px solid #e3a900; outline-offset: 3px; }
+
+    .skip-link { position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 14px; background: var(--yellow); color: var(--ink); font-weight: 700; border-radius: 8px; }
+    .skip-link:focus { top: 12px; }
+
+    .back-to-top {
+      position: fixed; right: 22px; bottom: 22px; z-index: 20;
+      width: 48px; height: 48px; display: grid; place-items: center;
+      border: 1px solid rgba(255,196,0,.5); border-radius: 14px;
+      background: var(--ink); color: var(--yellow); font-size: 1.1rem; font-weight: 800; cursor: pointer;
+      opacity: 0; visibility: hidden; transform: translateY(12px);
+      transition: opacity .3s, transform .3s, visibility .3s, background .2s, color .2s;
+      box-shadow: 0 12px 28px rgba(0,0,0,.25);
+    }
+    .back-to-top:hover { background: var(--yellow); color: var(--ink); }
+    .back-to-top.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+
+    /* ---------- HERO / SLIDER ---------- */
+    .top-slider {
+      position: relative; overflow: hidden; background: #101214;
+      height: min(84vh, 780px); height: min(84svh, 780px);
+      min-height: 580px; aspect-ratio: auto;
+    }
+
+    /* ---------- AÇILIŞ VİDEOSU ---------- */
+    .hero-video-wrap { position: absolute; inset: 0; z-index: 10; background: #000; transition: opacity .9s ease, visibility 0s linear .9s; }
+    .hero-video-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-video-wrap.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .slides { position: relative; width: 100%; height: 100%; }
+    .slide {
+      position: absolute; inset: 0; opacity: 0; visibility: hidden; pointer-events: none;
+      transition: opacity 1.2s cubic-bezier(.4,0,.2,1), visibility 0s linear 1.2s;
+    }
+    .slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; z-index: 1; transition: opacity 1.2s cubic-bezier(.4,0,.2,1), visibility 0s; }
+    .slide img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; transform: scale(1.08); transition: transform 7s ease-out; }
+    .slide.is-active img { transform: scale(1); }
+    .slide-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(0deg, rgba(8,10,11,.6) 0%, rgba(8,10,11,0) 38%),
+        linear-gradient(95deg, rgba(8,10,11,.93) 0%, rgba(8,10,11,.74) 38%, rgba(8,10,11,.28) 74%, rgba(8,10,11,.32) 100%);
+    }
+    .slide-inner {
+      position: relative; z-index: 1; width: 100%; height: 100%;
+      padding-inline: calc((100% - min(100%, var(--wrap))) / 2 + var(--gutter));
+      padding-block: 90px 110px;
+      display: flex; align-items: center;
+    }
+    .slide-content { width: min(560px, 100%); }
+    .slide-content > * { opacity: 0; transform: translate3d(0, 26px, 0); transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+    .slide.is-active .slide-content > * { opacity: 1; transform: none; }
+    .slide.is-active .slide-content > :nth-child(1) { transition-delay: .35s; }
+    .slide.is-active .slide-content > :nth-child(2) { transition-delay: .5s; }
+    .slide.is-active .slide-content > :nth-child(3) { transition-delay: .65s; }
+    .slide.is-active .slide-content > :nth-child(4) { transition-delay: .8s; }
+
+    .slide-kicker {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 6px 13px; margin-bottom: 16px;
+      border: 1px solid rgba(255,196,0,.45); border-radius: 999px; background: rgba(255,196,0,.1);
+      font-size: .62rem !important; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .slide-kicker::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 0 4px rgba(255,196,0,.25); }
+    .slide-title { color: #fff; margin: 0; max-width: 720px; line-height: 1.04; letter-spacing: -.042em; font-size: clamp(1rem, 2.3vw, 1.9rem) !important; font-weight: 800 !important; }
+    .slide-desc { color: #e3e8e8; max-width: 560px; margin: 16px 0 24px; line-height: 1.6; font-size: clamp(.8rem, .9vw, .9rem) !important; }
+    .slide-content .button { font-size: .82rem !important; min-height: 44px; padding: 0 22px; }
+
+    .slider-dots {
+      position: absolute; z-index: 5; bottom: 34px;
+      left: calc((100% - min(100%, var(--wrap))) / 2 + var(--gutter));
+      transform: none; display: flex; gap: 10px;
+    }
+    .slider-dot { position: relative; width: 52px; height: 20px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+    .slider-dot::before, .slider-dot::after { content: ""; position: absolute; left: 0; top: 8px; height: 4px; border-radius: 4px; }
+    .slider-dot::before { width: 100%; background: rgba(255,255,255,.3); }
+    .slider-dot::after { width: 0; background: var(--yellow); }
+    .slider-dot.is-active::after { animation: dotfill 6.5s linear forwards; }
+    @keyframes dotfill { from { width: 0; } to { width: 100%; } }
+
+    /* ---------- BUTONLAR ---------- */
+    .button {
+      min-height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 0 26px; border: 1px solid transparent; border-radius: 12px;
+      font-weight: 700; font-size: .95rem; letter-spacing: .01em;
+      transition: transform .25s var(--ease), background .2s, border-color .2s, box-shadow .25s;
+    }
+    .button:hover { transform: translateY(-3px); }
+    .button-primary { background: var(--yellow); color: #181818; }
+    .button-primary:hover { background: #ffd633; box-shadow: 0 12px 26px rgba(255,196,0,.38); }
+    .button-dark { background: #fff; color: #1a1c1d; }
+    .button-dark:hover { box-shadow: 0 12px 26px rgba(23,25,27,.22); }
+    .button-outline { border-color: #7d8587; color: #fff; }
+    .button-outline:hover { color: var(--yellow); border-color: var(--yellow); }
+
+    /* ---------- GENEL BÖLÜM ---------- */
+    .section { padding: clamp(60px, 7.5vw, 108px) 0; }
+    .section-soft { background: var(--soft); }
+    .section-dark { background: radial-gradient(900px 420px at 88% 0%, rgba(255,196,0,.12), transparent 60%), var(--ink); color: #fff; }
+    .section-intro { max-width: 720px; margin-bottom: clamp(30px, 4vw, 48px); }
+    .section-tag, .eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      margin: 0 0 14px; font-size: .78rem !important; font-weight: 800; letter-spacing: .14em !important; text-transform: uppercase;
+    }
+    .section-tag { color: #a87700; }
+    .eyebrow { color: var(--yellow); }
+    .section-tag::before, .eyebrow::before { content: ""; width: 30px; height: 2px; background: var(--yellow); }
+    .section-title { margin: 0; line-height: 1.12; letter-spacing: -.04em; font-size: clamp(1.7rem, 3vw, 2.5rem) !important; font-weight: 800 !important; }
+    .section-text { color: var(--muted); line-height: 1.75; margin: 16px 0 0; }
+
+    /* ---------- GİRİŞ METNİ ---------- */
+    .seo-copy-section { background: var(--soft); }
+    .seo-copy-section .section-intro { width: 100%; max-width: none; margin: 0; }
+    .seo-intro-layout > div { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.4fr); column-gap: clamp(28px, 5vw, 80px); align-items: start; }
+    .seo-intro-layout .section-title { grid-column: 1; grid-row: 1 / span 3; max-width: 100%; position: relative; padding-top: 22px; }
+    .seo-intro-layout .section-title::before { content: ""; position: absolute; top: 0; left: 0; width: 56px; height: 4px; background: var(--yellow); border-radius: 4px; }
+    .seo-intro-layout .section-text { grid-column: 2; max-width: 100%; margin-top: 0; margin-bottom: 16px; font-size: 1.02rem !important; }
+    .service-region-note {
+      display: inline-block; justify-self: start; margin-top: 4px !important; padding: 12px 18px;
+      border-radius: 12px; background: #e8f1f9; color: #1769aa; font-weight: 700; overflow-wrap: anywhere;
+      font-size: .9rem !important;
+    }
+
+    /* ---------- KARTLAR ---------- */
+    .quick-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
+    .service-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+    .quick-card, .service-card {
+      display: block; overflow: hidden; background: #fff; color: var(--ink);
+      border: 1px solid var(--line); border-radius: 22px;
+      box-shadow: 0 6px 24px rgba(15,18,20,.05);
+      transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .3s;
+    }
+    .service-card { display: flex; flex-direction: column; border-radius: 18px; }
+    .quick-card:hover, .service-card:hover { transform: translateY(-8px); box-shadow: 0 26px 54px rgba(15,18,20,.14); border-color: transparent; }
+
+    .card-image-wrap { width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: #e9ece8; }
+    .quick-card .card-image-wrap { aspect-ratio: 16 / 11; }
+    .card-image-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s var(--ease); }
+    .quick-card:hover img, .service-card:hover img { transform: scale(1.06); }
+
+    .quick-card-content { position: relative; padding: 34px 28px 30px; }
+    .quick-card-content::after {
+      content: "→"; position: absolute; right: 24px; top: -26px;
+      width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%;
+      background: var(--yellow); color: var(--ink); font-size: 1.25rem; font-weight: 800;
+      box-shadow: 0 10px 22px rgba(255,196,0,.45); transition: transform .35s var(--ease);
+    }
+    .quick-card:hover .quick-card-content::after { transform: translateX(4px) rotate(-8deg); }
+    .quick-card h3 { margin: 0 0 10px; font-size: 1.3rem !important; letter-spacing: -.02em; }
+    .quick-card p, .service-card p { margin: 0; color: var(--muted); line-height: 1.6; font-size: .92rem !important; }
+
+    .service-card-content { display: flex; flex-direction: column; flex: 1; padding: 20px 22px 22px; min-height: 0; }
+    .service-card h3 { margin: 0 0 8px; line-height: 1.25; letter-spacing: -.015em; font-size: 1.05rem !important; }
+    .service-card p { margin-bottom: 20px; }
+    .service-link {
+      margin-top: auto; align-self: flex-start; padding: 0 0 3px;
+      border-bottom: 2px solid var(--yellow); color: #8a6200;
+      font-size: .86rem !important; font-weight: 800; transition: color .2s, letter-spacing .3s;
+    }
+    .service-card:hover .service-link { color: var(--ink); letter-spacing: .02em; }
+
+    .seo-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; counter-reset: seo; }
+    .seo-grid article {
+      counter-increment: seo; position: relative; padding: 34px 30px 36px;
+      background: var(--soft); border-radius: 22px; border-top: 4px solid var(--yellow);
+      transition: transform .35s var(--ease), box-shadow .35s var(--ease), background .3s;
+    }
+    .seo-grid article:hover { transform: translateY(-6px); background: #fff; box-shadow: 0 22px 46px rgba(15,18,20,.1); }
+    .seo-grid article::before { content: "0" counter(seo); display: block; margin-bottom: 14px; font-size: 2.8rem; font-weight: 800; letter-spacing: -.05em; line-height: 1; color: rgba(23,25,27,.12); }
+    .seo-grid h3 { margin: 0; line-height: 1.3; font-size: 1.15rem !important; letter-spacing: -.02em; }
+    .seo-grid p { color: var(--muted); line-height: 1.7; font-size: .95rem !important; margin: 12px 0 0; }
+
+    /* ---------- HAKKIMIZDA ---------- */
+    .about-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(36px, 6vw, 88px); align-items: center; }
+    .about-image {
+      width: 100%; min-height: 0; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 26px;
+      box-shadow: 22px 22px 0 rgba(255,196,0,.16), 0 30px 60px rgba(0,0,0,.35);
+    }
+    .about-copy { color: #d7dcdd; line-height: 1.75; font-size: 1.05rem !important; }
+    .check-list { list-style: none; margin: 28px 0; padding: 0; display: grid; gap: 12px; }
+    .check-list li {
+      display: flex; gap: 14px; align-items: center; padding: 15px 18px;
+      color: #fff; font-weight: 600; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1); border-radius: 14px; transition: background .25s, border-color .25s, transform .3s var(--ease);
+    }
+    .check-list li:hover { background: rgba(255,255,255,.1); border-color: rgba(255,196,0,.5); transform: translateX(6px); }
+    .check-list i { color: var(--yellow); flex: 0 0 auto; }
+
+    .about-socials { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 30px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.14); }
+    .about-social-link {
+      width: 44px; height: 44px; display: grid; place-items: center; flex: 0 0 44px;
+      border: 1px solid rgba(255,255,255,.16); border-radius: 12px; background: rgba(255,255,255,.055); color: #fff;
+      transition: transform .25s var(--ease), background .2s, border-color .2s, box-shadow .2s;
+    }
+    .about-social-link svg { width: 21px; height: 21px; display: block; fill: currentColor; }
+    .about-social-link:hover { transform: translateY(-3px); background: rgba(255,255,255,.11); border-color: var(--yellow); box-shadow: 0 10px 20px rgba(0,0,0,.25); }
+    .about-social-link:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+    .about-social-link.facebook:hover { color: #1877f2; }
+    .about-social-link.instagram:hover { color: #e4405f; }
+    .about-social-link.nsosyal:hover { color: #ffc400; }
+    .about-social-link.google:hover { color: #4285f4; }
+    .about-social-link.youtube:hover { color: #ff0000; }
+
+    /* ---------- YORUMLAR + DUYURU ---------- */
+    .reviews-news-grid {
+      display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 24px; align-items: stretch;
+      width: 100%; max-width: var(--wrap); margin-inline: auto;
+      padding: clamp(60px, 7.5vw, 108px) var(--gutter) 0;
+    }
+    .reviews-news-grid > .section { padding: 0; min-width: 0; background: transparent; }
+    .reviews-news-grid .site-width { padding-inline: 0; height: 100%; }
+    .reviews-panel {
+      position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center;
+      height: 100%; padding: clamp(28px, 4vw, 44px);
+      background: #fff; border: 1px solid var(--line); border-radius: 26px; box-shadow: 0 10px 34px rgba(15,18,20,.06);
+    }
+    .reviews-panel::before { content: "“"; position: absolute; top: -14px; right: 26px; font-family: Georgia, serif; font-size: 9rem; line-height: 1; color: rgba(255,196,0,.35); pointer-events: none; }
+    .reviews-panel p { color: var(--muted); margin: 12px 0 0; line-height: 1.7; }
+    .reviews-panel .section-tag { margin-bottom: 14px; }
+    .review-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .review-actions a:empty { display: none; }
+
+    .news-box {
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 24px;
+      height: 100%; padding: clamp(28px, 4vw, 44px); border-radius: 26px;
+      background: radial-gradient(420px 220px at 100% 0%, rgba(255,255,255,.45), transparent 60%), linear-gradient(130deg, #ffc400, #ffd947);
+      color: var(--ink); box-shadow: 0 18px 40px rgba(255,196,0,.28);
+    }
+    .news-box h2 { margin: 0; letter-spacing: -.035em; line-height: 1.15; font-size: clamp(1.4rem, 2.2vw, 1.8rem) !important; }
+    .news-box p { margin: 10px 0 0; line-height: 1.55; }
+
+    /* ---------- İLETİŞİM ---------- */
+    #iletisim { padding-top: clamp(48px, 6vw, 84px); }
+    .contact-grid { display: grid; grid-template-columns: 1fr; gap: 0; align-items: stretch; }
+    .contact-info {
+      position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+      column-gap: clamp(28px, 5vw, 72px); row-gap: 10px; align-items: center;
+      width: 100%; height: auto; min-width: 0; padding: clamp(28px, 5vw, 64px);
+      background: radial-gradient(600px 300px at 100% 0%, rgba(255,196,0,.16), transparent 60%), linear-gradient(145deg, #0b1d3a 0%, #123b70 100%);
+      color: #fff; border: 1px solid rgba(255,255,255,.12); border-radius: 30px; box-shadow: 0 30px 70px rgba(8,29,58,.28);
+    }
+    .contact-info > [data-template-id="contact-tag"], .contact-info > [data-template-id="contact-title"], .contact-info > [data-template-id="contact-text"], .contact-info > .contact-list { grid-column: 1; min-width: 0; }
+    .contact-info > .quick-contact-actions { grid-column: 2; grid-row: 1 / span 4; }
+    .contact-info h2 { margin: 0; letter-spacing: -.04em; line-height: 1.1; font-size: clamp(1.8rem, 3.2vw, 2.6rem) !important; }
+    .contact-info p { color: #dce9f7; line-height: 1.7; }
+    .contact-list { display: grid; gap: 14px; margin-top: 22px; }
+    .contact-list a { color: #fff; display: flex; gap: 14px; align-items: center; font-weight: 600; min-width: 0; }
+    .contact-list a span { overflow-wrap: anywhere; color: #fff !important; font-size: 1rem !important; font-weight: 600 !important; }
+    .contact-list i { color: var(--yellow); flex: 0 0 auto; }
+
+    .quick-contact-actions { display: grid; grid-template-columns: 1fr; gap: 14px; width: 100%; min-width: 0; margin: 0; }
+    .contact-buttons { display: grid; gap: 12px; }
+    .contact-button {
+      position: relative; overflow: hidden; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "icon title" "icon text";
+      column-gap: 18px; row-gap: 2px; align-items: center; min-height: 92px; padding: 18px 22px;
+      border: 1px solid rgba(255,255,255,.16); border-radius: 20px;
+      box-shadow: 0 12px 26px rgba(0,0,0,.18);
+      transition: transform .3s var(--ease), box-shadow .3s var(--ease), filter .2s;
+    }
+    .contact-button:hover { transform: translateY(-4px) translateX(4px); box-shadow: 0 20px 38px rgba(0,0,0,.26); filter: brightness(1.04); }
+    .contact-button .contact-brand-icon { grid-area: icon; width: 52px; height: 52px; display: grid; place-items: center; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 18px rgba(0,0,0,.18); }
+    .contact-button .contact-brand-icon svg { width: 28px; height: 28px; display: block; }
+    .contact-button strong { grid-area: title; align-self: end; font-size: 1.08rem; line-height: 1.2; }
+    .contact-button > span:last-child { grid-area: text; align-self: start; font-size: .9rem; line-height: 1.3; overflow-wrap: anywhere; }
+    .contact-button.call-card, .contact-button.email-card { background: linear-gradient(145deg, #ffffff, #edf1f2); color: #17191b; border-color: rgba(255,255,255,.7); }
+    .contact-button.call-card > span:last-child, .contact-button.email-card > span:last-child { color: #596067; }
+    .contact-button.call-card .contact-brand-icon { background: #17191b; color: #ffc400; }
+    .contact-button.email-card .contact-brand-icon { background: #ffc400; color: #17191b; }
+    .contact-button.whatsapp-card { background: linear-gradient(145deg, #25d366, #1fb957); border-color: rgba(255,255,255,.2); color: #fff; }
+    .contact-button.whatsapp-card > span:last-child { color: rgba(255,255,255,.94); }
+    .contact-button.whatsapp-card .contact-brand-icon { background: #fff; color: #25d366; }
+
+    /* ---------- FOOTER ---------- */
+    footer { background: #0e1011; color: #fff; padding: clamp(52px, 6vw, 84px) 0 26px; border-top: 4px solid var(--yellow); }
+    .footer-grid { display: grid; grid-template-columns: 1.3fr .8fr .9fr; gap: clamp(28px, 5vw, 64px); }
+    .footer-description { color: #bfc6c5; line-height: 1.75; max-width: 360px; font-size: .95rem !important; margin: 0; }
+    .footer-heading { margin: 0 0 18px; font-size: .88rem !important; color: var(--yellow); text-transform: uppercase; letter-spacing: .14em; }
+    .footer-links { display: grid; gap: 12px; }
+    .footer-links a, .footer-contact { color: #d8dddd; font-size: .95rem !important; transition: color .2s, transform .25s var(--ease); }
+    .footer-links a:hover { color: var(--yellow); transform: translateX(4px); }
+    .socials { display: flex; gap: 10px; margin-top: 24px; }
+    .social { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid #3f4546; border-radius: 12px; color: #fff; transition: transform .25s var(--ease), background .2s, border-color .2s, color .2s; }
+    .social:hover { transform: translateY(-3px); background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+    .footer-bottom { padding-top: 26px; margin-top: 44px; border-top: 1px solid #2c3132; color: #aeb5b4; font-size: .85rem; }
+
+    /* ---------- SCROLL REVEAL ---------- */
+    .reveal { opacity: 0; transition: opacity 1.1s cubic-bezier(.25,.8,.25,1), transform 1.1s cubic-bezier(.25,.8,.25,1); will-change: opacity, transform; }
+    .reveal[data-reveal="up"]    { transform: translate3d(0, 56px, 0); }
+    .reveal[data-reveal="left"]  { transform: translate3d(-72px, 0, 0); }
+    .reveal[data-reveal="right"] { transform: translate3d(72px, 0, 0); }
+
+    /* ---------- TABLET ---------- */
+    @media (max-width: 1100px) {
+      .service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 900px) {
+      .seo-intro-layout > div { grid-template-columns: 1fr; }
+      .seo-intro-layout .section-title { grid-row: auto; margin-bottom: 18px; }
+      .seo-intro-layout .section-text { grid-column: 1; }
+      .quick-grid, .seo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-image { aspect-ratio: 16 / 11; }
+      .contact-info { grid-template-columns: 1fr; }
+      .contact-info > .quick-contact-actions { grid-column: 1; grid-row: auto; margin-top: 22px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .reviews-panel { grid-template-columns: 1fr; }
+      .review-actions { justify-content: flex-start; }
+    }
+    @media (max-width: 768px) {
+      .reviews-news-grid { grid-template-columns: 1fr; gap: 14px; }
+      .reveal { transition: opacity 1.25s cubic-bezier(.22,.7,.2,1), transform 1.25s cubic-bezier(.22,.7,.2,1); }
+      .reveal[data-reveal="up"], .reveal[data-reveal="left"], .reveal[data-reveal="right"] { transform: translate3d(0, 28px, 0); }
+      .slide img { transform: scale(1.04); transition: transform 6s ease-out; }
+      .slide-content > * { transform: translate3d(0, 18px, 0); }
+    }
+    .reveal.scroll-visible { opacity: 1; transform: none; }
+
+    /* ---------- MOBİL ---------- */
+    @media (max-width: 620px) {
+      :root { --gutter: 16px; }
+      .top-slider { height: min(88vh, 700px); height: min(88svh, 700px); min-height: 540px; }
+      .slide-overlay { background: linear-gradient(0deg, rgba(8,10,11,.95) 0%, rgba(8,10,11,.66) 52%, rgba(8,10,11,.2) 100%); }
+      .slide-inner { padding-block: 90px 92px; align-items: flex-end; }
+      .slide-kicker { margin-bottom: 12px; padding: 6px 11px; font-size: .6rem !important; }
+      .slide-title { font-size: 1.6rem !important; }
+      .slide-desc { margin: 12px 0 18px; line-height: 1.5; font-size: .8rem !important; }
+      .slide-content .button { font-size: .8rem !important; min-height: 44px; }
+      .slide-content .button { width: 100%; }
+      .slider-dots { bottom: 30px; }
+      .slider-dot { width: 40px; }
+      .back-to-top { right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); width: 44px; height: 44px; }
+
+      .section { padding: 54px 0; }
+      .quick-grid, .seo-grid { grid-template-columns: 1fr; gap: 18px; }
+      .service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .quick-card-content { padding: 30px 20px 24px; }
+      .quick-card-content::after { right: 18px; top: -24px; width: 46px; height: 46px; }
+      .service-card { border-radius: 16px; }
+      .service-card-content { padding: 12px 12px 14px; }
+      .service-card h3 { font-size: .92rem !important; margin-bottom: 6px; }
+      .service-card p { font-size: .78rem !important; line-height: 1.45; margin-bottom: 12px; }
+      .service-link { font-size: .76rem !important; }
+      .seo-grid article { padding: 26px 22px 28px; }
+
+      .about-image { box-shadow: 12px 12px 0 rgba(255,196,0,.16), 0 20px 40px rgba(0,0,0,.35); border-radius: 20px; }
+      .reviews-news-grid { padding-top: 54px; }
+      .reviews-panel { border-radius: 20px; }
+
+      /* MOBİL DUYURU — sadece buton, tam ekran genişliği */
+      #duyurular {
+        display: block !important; grid-column: 1 / -1;
+        width: 100vw !important; max-width: 100vw !important; min-width: 100vw !important;
+        margin-left: calc(50% - 50vw) !important; margin-right: 0 !important;
+        padding: 0 !important; background: transparent !important;
+      }
+      #duyurular > .site-width { width: 100% !important; max-width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; }
+      #duyurular .news-box {
+        width: 100% !important; max-width: 100% !important; min-width: 0 !important; min-height: 0 !important; height: auto !important;
+        margin: 0 !important; padding: 12px !important; display: flex !important; flex-direction: row !important;
+        align-items: center !important; justify-content: center !important; gap: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+      }
+      #duyurular .news-box > div { display: none !important; }
+      #duyurular .news-box .button {
+        display: inline-flex !important; width: auto !important; max-width: 100% !important; min-width: 0 !important;
+        min-height: 40px !important; height: 40px !important; margin: 0 !important; padding: 0 18px !important;
+        border-radius: 10px !important; font-size: .8rem !important; line-height: 1 !important; white-space: nowrap !important; flex: 0 0 auto !important;
+      }
+
+      #iletisim { padding-top: 40px; }
+      .contact-info { border-radius: 22px; padding: 26px 20px; }
+      .contact-button { min-height: 82px; padding: 14px 16px; column-gap: 14px; border-radius: 16px; }
+      .contact-button .contact-brand-icon { width: 46px; height: 46px; border-radius: 14px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .slide-content > *, .slide img { opacity: 1 !important; transform: none !important; transition: none !important; }
+      .slider-dot.is-active::after { animation: none; width: 100%; }
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+ </head>
+ <body data-template-id="__page-root" style="background: rgb(255, 255, 255);">
+  <div class="site-shell"><a class="skip-link" href="#main-content">Ana içeriğe geç</a> <button id="back-to-top" class="back-to-top" type="button" aria-label="Başa dön" title="Başa dön">↑</button>
+   <main id="main-content">
+    <section id="ana-sayfa" class="top-slider" tabindex="0" aria-label="Hizmet görsel sliderı">
+     <div class="hero-video-wrap" id="heroVideoWrap">
+      <video id="heroVideo" muted playsinline preload="auto"></video>
+     </div>
+     <div class="slides">
+      <article class="slide is-active" aria-hidden="false"><img data-template-id="slide-electric-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/6349408/pexels-photo-6349408.jpeg" alt="Markasız el aletleri ve elektrik kablolarının yakın görünümü">
+       <div class="slide-overlay"></div>
+       <div class="slide-inner">
+        <div class="slide-content"><span data-template-id="slide-electric-kicker" class="canva-text slide-kicker" style="color: rgb(255, 196, 0); font-weight: 800; font-style: normal; font-size: 16px;">Elektrik Hizmetleri</span>
+         <h1 data-template-id="slide-electric-title" class="canva-text slide-title" style="color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 32px;">İstanbul Anadolu Yakası’nda Montaj, Tadilat ve Elektrik Hizmetleri</h1>
+         <p data-template-id="slide-electric-desc" class="canva-text slide-desc" style="color: rgb(233, 238, 238); font-weight: 400; font-style: normal; font-size: 17px; line-height: 1.65;">Pendik, Kartal, Maltepe, Ataşehir ve Tuzla’da ev ve işyerleri için planlı, özenli ve doğrudan hizmet.</p><a data-template-id="slide-electric-link" class="canva-button button button-primary" href="https://www.usta-eller.com/hizmetlerimiz/elektrik-gruplari/sigorta-priz-degisim-montaj" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 196, 0); color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 16px;">Elektrik Hizmetlerini İncele</a>
+        </div>
+       </div>
+      </article>
+      <article class="slide" aria-hidden="true"><img data-template-id="slide-satellite-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/12271449/pexels-photo-12271449.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1600" alt="Çatı üzerinde uydu sinyali alan çanak antenler">
+       <div class="slide-overlay"></div>
+       <div class="slide-inner">
+        <div class="slide-content"><span data-template-id="slide-satellite-kicker" class="canva-text slide-kicker" style="color: rgb(255, 196, 0); font-weight: 800; font-style: normal; font-size: 16px;">Uydu Sistemleri</span>
+         <h2 data-template-id="slide-satellite-title" class="canva-text slide-title" style="color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 24px;">Çanak Anten ve Uydu Kurulumu</h2>
+         <p data-template-id="slide-satellite-desc" class="canva-text slide-desc" style="color: rgb(233, 238, 238); font-weight: 400; font-style: normal; font-size: 17px;">Kurulum ve montaj ihtiyaçları için düzenli ve planlı destek.</p><a data-template-id="slide-satellite-link" class="canva-button button button-primary" href="https://www.usta-eller.com/hizmetlerimiz/elektrik-gruplari/canak-anten-kurulum-ve-montaj" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 196, 0); color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 16px;">Çanak Anten Hizmetini İncele</a>
+        </div>
+       </div>
+      </article>
+      <article class="slide" aria-hidden="true"><img data-template-id="slide-furniture-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/5805491/pexels-photo-5805491.jpeg" alt="Markasız mobilya montajı için aletler ve kurulum şeması">
+       <div class="slide-overlay"></div>
+       <div class="slide-inner">
+        <div class="slide-content"><span data-template-id="slide-furniture-kicker" class="canva-text slide-kicker" style="color: rgb(255, 196, 0); font-weight: 800; font-style: normal; font-size: 16px;">Montaj Hizmetleri</span>
+         <h2 data-template-id="slide-furniture-title" class="canva-text slide-title" style="color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 24px;">Mobilya ve Ankastre Montajı</h2>
+         <p data-template-id="slide-furniture-desc" class="canva-text slide-desc" style="color: rgb(233, 238, 238); font-weight: 400; font-style: normal; font-size: 17px;">Mobilya, ankastre ve ev ekipmanları için dikkatli montaj desteği.</p><a data-template-id="slide-furniture-link" class="canva-button button button-primary" href="https://www.usta-eller.com/hizmetlerimiz/montaj-ve-demontaj/mobilya-montajdemontajkurulum-ve-servis" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 196, 0); color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 16px;">Mobilya Montajını İncele</a>
+        </div>
+       </div>
+      </article>
+      <article class="slide" aria-hidden="true"><img data-template-id="slide-support-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/7238606/pexels-photo-7238606.jpeg" alt="Markasız tamir aletlerinin düzenli görünümü">
+       <div class="slide-overlay"></div>
+       <div class="slide-inner">
+        <div class="slide-content"><span data-template-id="slide-support-kicker" class="canva-text slide-kicker" style="color: rgb(255, 196, 0); font-weight: 800; font-style: normal; font-size: 16px;">Yerinde Destek</span>
+         <h2 data-template-id="slide-support-title" class="canva-text slide-title" style="color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 24px;">Ev ve İşyerleri İçin Montaj Desteği</h2>
+         <p data-template-id="slide-support-desc" class="canva-text slide-desc" style="color: rgb(233, 238, 238); font-weight: 400; font-style: normal; font-size: 17px;">Farklı montaj ve uygulama ihtiyaçlarında doğrudan iletişim.</p><a data-template-id="slide-support-link" class="canva-button button button-primary" href="#iletisim" style="background: rgb(255, 196, 0); color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 16px;">İletişime Geçin</a>
+        </div>
+       </div>
+      </article>
+     </div>
+     <div class="slider-dots" role="tablist" aria-label="Slider seçimi"><button class="slider-dot is-active" type="button" aria-label="1. slayt" aria-selected="true"></button> <button class="slider-dot" type="button" aria-label="2. slayt" aria-selected="false"></button> <button class="slider-dot" type="button" aria-label="3. slayt" aria-selected="false"></button> <button class="slider-dot" type="button" aria-label="4. slayt" aria-selected="false"></button>
+     </div>
+    </section>
+    <section class="section seo-copy-section">
+     <div class="site-width">
+      <div class="section-intro seo-intro-layout">
+       <div>
+        <h2 data-template-id="seo-main-title" class="canva-text section-title" style="color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 24px;">İstanbul Anadolu Yakası’nda Montaj, Tadilat ve Elektrik Hizmetleri</h2>
+        <p data-template-id="seo-main-text" class="canva-text section-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 16px;">Usta Eller Montaj; Pendik, Kartal, Maltepe ve Tuzla başta olmak üzere İstanbul Anadolu Yakası’nda ev ve işyerleri için montaj, tadilat, elektrik hizmetleri, mobilya montajı ve çeşitli teknik destek hizmetleri sunar. Çanak anten ve uydu kurulumu, güvenlik kamera montajı, sigorta-priz-aydınlatma işleri, avize montajı, klima/kombi/ocak elektrik bağlantıları, ankastre, televizyon, ayna, korniş, duş seti ve banyo aksesuarı montajı gibi ihtiyaçlarda randevu ve uygunluk odaklı, düzenli ve özenli hizmet anlayışıyla çalışır.</p>
+        <p data-template-id="seo-main-text-two" class="canva-text section-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 16px;">İstanbul Anadolu Yakası’nda mobil montaj ve tadilat desteği arayanlar Usta Eller Montaj ile doğrudan iletişime geçebilir; hizmet kapsamı ve kategori bazlı hizmet bölgeleri için ilgili hizmet bağlantıları incelenebilir.</p>
+        <p data-template-id="services-region-note" class="canva-text section-text service-region-note" style="color: rgb(23, 105, 170); font-weight: 700; font-style: normal; font-size: 14px;">Kategori bazlı hizmet bölgeleri için menüden hizmet kısımlarını inceleyiniz.</p>
+       </div>
+      </div>
+     </div>
+    </section>
+    <section class="section">
+     <div class="site-width">
+      <div class="section-intro">
+       <p data-template-id="quick-tag" class="canva-text section-tag" style="color: rgb(168, 119, 0); font-weight: 800; font-style: normal; font-size: 16px; letter-spacing: 0.1rem;">BAZI HİZMETLERİMİZ</p>
+       <h2 data-template-id="quick-title" class="canva-text section-title" style="color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 24px;">İhtiyacınıza uygun, yerinde destek</h2>
+      </div>
+      <div class="quick-grid"><a data-template-id="quick-electric" class="canva-card quick-card" href="https://www.usta-eller.com/hizmetlerimiz/elektrik-gruplari/sigorta-priz-degisim-montaj" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="quick-electric-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/5691589/pexels-photo-5691589.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Elektrik anahtarı montajı yapan usta">
+        </div>
+        <div class="quick-card-content">
+         <h3 data-template-id="quick-electric-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 18px;">Elektrik Uygulamaları</h3>
+         <p data-template-id="quick-electric-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Priz, sigorta, aydınlatma ve bağlantı ihtiyaçlarında işlevsel çözümler.</p>
+        </div></a> <a data-template-id="quick-mount" class="canva-card quick-card" href="https://www.usta-eller.com/hizmetlerimiz/montaj-ve-demontaj/mobilya-montajdemontajkurulum-ve-servis" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="quick-mount-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/5805491/pexels-photo-5805491.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Mobilya montajı için araçlar ve kurulum şeması">
+        </div>
+        <div class="quick-card-content">
+         <h3 data-template-id="quick-mount-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 18px;">Montaj Hizmetleri</h3>
+         <p data-template-id="quick-mount-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Mobilya, TV, korniş, ayna ve ankastre montajında dikkatli uygulama.</p>
+        </div></a> <a data-template-id="quick-renovation" class="canva-card quick-card" href="#iletisim" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="quick-renovation-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/5317152/pexels-photo-5317152.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Tamirat işleri için tornavida ve el aletleri">
+        </div>
+        <div class="quick-card-content">
+         <h3 data-template-id="quick-renovation-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 18px;">Tadilat Desteği</h3>
+         <p data-template-id="quick-renovation-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Ev ve işyerlerinde ihtiyaç duyulan küçük uygulamalarda planlı yaklaşım.</p>
+        </div></a>
+      </div>
+     </div>
+    </section>
+    <section id="hizmetlerimiz" class="section section-soft">
+     <div class="site-width">
+      <div class="section-intro">
+       <p data-template-id="services-tag" class="canva-text section-tag" style="color: rgb(168, 119, 0); font-weight: 800; font-style: normal; font-size: 16px; letter-spacing: 0.1rem;">Hizmetlerimiz</p>
+       <h2 data-template-id="services-title" class="canva-text section-title" style="color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 24px;">Montajdan elektriğe kapsamlı hizmetler</h2>
+       <p data-template-id="services-intro" class="canva-text section-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 16px;">İstanbul Anadolu Yakası’nda ev ve işyerleri için ihtiyaç odaklı montaj, elektrik ve uygulama desteği.</p>
+      </div>
+      <div class="service-grid"><a data-template-id="service-dish" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/elektrik-gruplari/canak-anten-kurulum-ve-montaj" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-dish-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/12271449/pexels-photo-12271449.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Çatı üzerinde uydu sinyali alan çanak antenler">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-dish-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Çanak Anten ve Uydu Kurulumu</h3>
+         <p data-template-id="service-dish-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Çanak anten ve uydu sistemleri için yerinde kurulum ve montaj desteği.</p><span data-template-id="service-dish-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-camera" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/elektrik-gruplari/guvenlik-kamera-kurulum-ve-montaj-hizmeti" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-camera-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/18969854/pexels-photo-18969854.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Bina köşesine monte edilmiş güvenlik kamerası">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-camera-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Güvenlik Kamera Montajı</h3>
+         <p data-template-id="service-camera-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Kamera sistemleri için düzenli konumlandırma ve montaj uygulaması.</p><span data-template-id="service-camera-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-electric" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/elektrik-gruplari/sigorta-priz-degisim-montaj" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-electric-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/5691589/pexels-photo-5691589.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Duvar anahtarı ve elektrik bağlantısı montajı">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-electric-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Sigorta, Priz, Aydınlatma ve Elektrik</h3>
+         <p data-template-id="service-electric-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Priz, sigorta, aydınlatma ve çeşitli elektrik montaj işlemleri.</p><span data-template-id="service-electric-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-chandelier" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/elektrik-gruplari/sigorta-priz-degisim-montaj" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-chandelier-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/30805979/pexels-photo-30805979.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Modern iç mekanda cam küreli avize">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-chandelier-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Avize Montajı</h3>
+         <p data-template-id="service-chandelier-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Yaşam alanlarına uygun avize ve aydınlatma montaj desteği.</p><span data-template-id="service-chandelier-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-connection" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/elektrik-gruplari/ocak-klima-kombi-baglantilari" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-connection-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/34054464/pexels-photo-34054464.jpeg" alt="Elektrik panosunda bağlantıları test eden elektrik teknisyeni">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-connection-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Ocak, Klima ve Kombi Elektrik Bağlantısı</h3>
+         <p data-template-id="service-connection-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Ocak, klima ve kombi için uygun elektrik bağlantı uygulamaları.</p><span data-template-id="service-connection-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-mirror" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/montaj-ve-demontaj/ayna-montajkurulum-ve-servis" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-mirror-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/34772902/pexels-photo-34772902.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Banyoda geniş duvar aynası ve lavabo">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-mirror-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Ayna Montaj Hizmeti</h3>
+         <p data-template-id="service-mirror-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Duvar ve yaşam alanları için güvenli, düzenli ayna montajı.</p><span data-template-id="service-mirror-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-appliance" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/montaj-ve-demontaj/firin-ankastre-davlumbaz-ocak" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-appliance-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/7535016/pexels-photo-7535016.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Modern mutfakta ankastre fırın ve ocak">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-appliance-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Ankastre Montaj Hizmeti</h3>
+         <p data-template-id="service-appliance-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Fırın, ocak ve davlumbaz için montaj ve yerleştirme desteği.</p><span data-template-id="service-appliance-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-furniture" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/montaj-ve-demontaj/mobilya-montajdemontajkurulum-ve-servis" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-furniture-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/4554427/pexels-photo-4554427.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Masa montajı yapan kişi">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-furniture-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Mobilya Montaj Hizmeti</h3>
+         <p data-template-id="service-furniture-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Mobilya kurulum, montaj ve demontaj ihtiyaçlarında yerinde destek.</p><span data-template-id="service-furniture-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-tv" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/montaj-ve-demontaj/televizyon-duvara-asmademontaj-ve-servis" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-tv-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/7546718/pexels-photo-7546718.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Duvara monte televizyon bulunan modern salon">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-tv-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Televizyon Duvar ve Askılama Montajı</h3>
+         <p data-template-id="service-tv-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Televizyonların duvara uygun biçimde askılanması için montaj desteği.</p><span data-template-id="service-tv-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-curtain" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/montaj-ve-demontaj/kornis-montaj" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-curtain-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/15226283/pexels-photo-15226283.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Pencere önünde beyaz perde ve korniş">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-curtain-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Korniş Montaj Hizmeti</h3>
+         <p data-template-id="service-curtain-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Korniş montajında düzgün hizalama ve özenli uygulama.</p><span data-template-id="service-curtain-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-bathroom" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/banyo-mutfak/dusseti-montaj-batarya-musluk" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-bathroom-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/4194864/pexels-photo-4194864.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Banyoda el duşu ve krom duş bataryası">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-bathroom-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Duş Seti, Batarya ve Banyo Aksesuar Montajı</h3>
+         <p data-template-id="service-bathroom-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Banyo ekipmanlarında montaj ve uygulama ihtiyaçlarına destek.</p><span data-template-id="service-bathroom-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-fly-screen" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/sineklik/mente%C5%9Feli-sineklik" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-fly-screen-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/8527494/pexels-photo-8527494.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Doğal gün ışığında modern balkon kapısı ve temiz, sade dış mekân görünümü">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-fly-screen-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Sineklik</h3>
+         <p data-template-id="service-fly-screen-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Pencere ve balkon kapıları için menteşeli sineklik montajı.</p><span data-template-id="service-fly-screen-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-steel-fire-door" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/kapi-montaj-tamir-bakim/celik-yangin-kapilari" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-steel-fire-door-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/32619803/pexels-photo-32619803.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Kurumsal bir koridorda bulunan acil çıkış ve yangın kapısı">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-steel-fire-door-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Çelik ve Yangın Kapı Montajı</h3>
+         <p data-template-id="service-steel-fire-door-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Kurumsal yapılarda çelik ve yangın kapısı montajı.</p><span data-template-id="service-steel-fire-door-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a> <a data-template-id="service-silicone-bathroom" class="canva-card service-card" href="https://www.usta-eller.com/hizmetlerimiz/banyo-mutfak/silikon-ve-kazima-islemleri" style="background: rgb(255, 255, 255);">
+        <div class="card-image-wrap">
+         <img data-template-id="service-silicone-bathroom-image" class="canva-image" loading="lazy" src="https://images.pexels.com/photos/6124242/pexels-photo-6124242.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=800" alt="Eldivenli bir elin derz ve kenara silikon uygulaması yapması">
+        </div>
+        <div class="service-card-content">
+         <h3 data-template-id="service-silicone-bathroom-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 17px;">Silikon ve Banyo Uygulamaları</h3>
+         <p data-template-id="service-silicone-bathroom-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Lavabo ve banyo kenarlarında silikon uygulama ve kazıma işleri.</p><span data-template-id="service-silicone-bathroom-link" class="canva-text service-link" style="color: rgb(148, 104, 0); font-weight: 800; font-style: normal; font-size: 16px;">Detayları İncele →</span>
+        </div></a>
+      </div>
+     </div>
+    </section>
+    <section class="section">
+     <div class="site-width seo-grid">
+      <article>
+       <h3 data-template-id="seo-mobile-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 19px;">İstanbul Anadolu Yakası’nda Mobil Montaj Hizmeti</h3>
+       <p data-template-id="seo-mobile-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Randevu ve uygunluk durumuna göre Pendik, Kartal, Maltepe, Ataşehir ve Tuzla’da mobil hizmet sunuyoruz. İhtiyaçları dinleyip uygulama için net bir çerçeve oluşturmayı önemsiyoruz.</p>
+      </article>
+      <article>
+       <h3 data-template-id="seo-work-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 19px;">Ev ve İşyerleri İçin Elektrik ve Tadilat Desteği</h3>
+       <p data-template-id="seo-work-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Elektrik bağlantısı, aydınlatma, mobilya ve farklı montaj ihtiyaçlarında evler ile işyerleri için özenli çalışma yaklaşımı sunuyoruz.</p>
+      </article>
+      <article>
+       <h3 data-template-id="seo-location-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 19px;">Pendik, Kartal, Maltepe, Ataşehir ve Tuzla’da Usta Eller</h3>
+       <p data-template-id="seo-location-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">Tadilat ve montaj işlerinde çalışma alanına saygılı, anlaşılır ve doğrudan iletişim kuran bir hizmet deneyimi hedefliyoruz.</p>
+      </article>
+     </div>
+    </section>
+    <section id="hakkimizda" class="section section-dark">
+     <div class="site-width about-grid"><img data-template-id="about-image" class="canva-image about-image" loading="lazy" src="https://images.pexels.com/photos/6720531/pexels-photo-6720531.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1200" alt="Takım çantasından aletlerini hazırlayan servis ustası">
+      <div>
+       <p data-template-id="about-tag" class="canva-text eyebrow" style="color: rgb(255, 196, 0); font-weight: 800; font-style: normal; font-size: 16px; letter-spacing: 0.1rem;">Hakkımızda</p>
+       <h2 data-template-id="about-title" class="canva-text section-title" style="color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 24px;">Çalışma anlayışımız</h2>
+       <p data-template-id="about-text" class="canva-text about-copy" style="color: rgb(215, 220, 221); font-weight: 400; font-style: normal; font-size: 17px; line-height: 1.72;">İşin her aşamasında netlik ve özen. Montaj ve uygulama işlerinde doğru planlama, açık iletişim ve çalışma alanına saygı bizim için sürecin doğal parçalarıdır.</p>
+       <ul class="check-list">
+        <li><i data-lucide="check-circle-2"></i><span data-template-id="about-item-one" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 600; font-style: normal; font-size: 16px;">Aracısız ve doğrudan iletişim</span></li>
+        <li><i data-lucide="check-circle-2"></i><span data-template-id="about-item-two" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 600; font-style: normal; font-size: 16px;">Randevu ve uygunluk odaklı planlama</span></li>
+        <li><i data-lucide="check-circle-2"></i><span data-template-id="about-item-three" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 600; font-style: normal; font-size: 16px;">Düzenli, özenli ve anlaşılır süreç</span></li>
+       </ul><a data-template-id="about-link" class="canva-button button button-primary" href="https://www.usta-eller.com/hakkimizda" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 196, 0); color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 16px;">Hakkımızda Daha Fazlası</a>
+       <div class="about-socials" aria-label="Sosyal medya hesaplarımız">
+        <a class="about-social-link facebook" href="https://www.facebook.com/profile.php?id=61583401676345" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook">
+         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.08c0-.87.24-1.46 1.5-1.46h1.6V3.94c-.28-.04-1.24-.12-2.36-.12-2.34 0-3.94 1.43-3.94 4.06V10H7.65v3h2.65v8h3.2Z"/></svg>
+        </a>
+        <a class="about-social-link instagram" href="https://www.instagram.com/ustaeller_montaj?igsh=MWNwdmdjN2tzcXBwdw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram">
+         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9Zm9.75 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
+        </a>
+        <a class="about-social-link nsosyal" href="https://nsosyal.com/ustaellermontaj" target="_blank" rel="noopener noreferrer" aria-label="NSosyal" title="NSosyal">
+         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2h11A2.5 2.5 0 0 1 20 4.5v11a2.5 2.5 0 0 1-2.5 2.5h-4.2l-3.8 3.1c-.7.58-1.5.08-1.5-.83V18H6.5A2.5 2.5 0 0 1 4 15.5v-11Zm3 1.5v8.5h2V9.1l4.3 5.4h2.2V6h-2v5.4L9.3 6H7Z"/></svg>
+        </a>
+        <a class="about-social-link google" href="https://www.google.com/maps/place/USTA+ELLER+%7C+Montaj+%26+Tadilat+Hizmetleri/@40.976169,29.051032,109870m/data=!3m1!1e3!4m8!3m7!1s0x202f9a66a07ffc05:0x53ce4e69744315fb!8m2!3d40.981794!4d29.256436!9m1!1b1!16s%2Fg%2F11yswb8xks!17m2!4m1!1e3!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" aria-label="Google Haritalar" title="Google Haritalar">
+         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.35 10.1c0 5.45-7.35 11.98-7.66 12.26a1 1 0 0 1-1.38 0C12 22.08 4.65 15.55 4.65 10.1A7.35 7.35 0 0 1 12 2.75a7.35 7.35 0 0 1 9.35 7.35Zm-9.35 3.4a3.1 3.1 0 1 0 0-6.2 3.1 3.1 0 0 0 0 6.2Z"/></svg>
+        </a>
+        <a class="about-social-link youtube" href="https://www.youtube.com/@ustaellermontaj/shorts" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube">
+         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.55 3.6 12 3.6 12 3.6s-7.55 0-9.4.5A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.85.5 9.4.5 9.4.5s7.55 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.2 3.6-6.2 3.6Z"/></svg>
+        </a>
+       </div>
+      </div>
+     </div>
+    </section>
+    <div class="reviews-news-grid">
+     <section id="yorumlar" class="section">
+      <div class="site-width">
+       <div class="reviews-panel">
+        <div>
+         <p data-template-id="reviews-tag" class="canva-text section-tag" style="color: rgb(168, 119, 0); font-weight: 800; font-style: normal; font-size: 16px; letter-spacing: 0.1rem;">Müşteri Yorumları</p>
+         <h2 data-template-id="reviews-title" class="canva-text section-title" style="color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 24px;">Deneyimleri inceleyin</h2>
+         <p data-template-id="reviews-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 16px;">Müşterilerimizin hizmet süreciyle ilgili görüşlerini inceleyebilir, Google üzerinden yorum bırakabilirsiniz.</p>
+        </div>
+        <div class="review-actions"><a data-template-id="reviews-all" class="canva-button button button-primary" href="https://www.usta-eller.com/musteri-yorumlari" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 196, 0); color: rgb(23, 25, 27); font-weight: 700; font-style: normal; font-size: 16px;">Tüm yorumları görüntüle</a> <a data-template-id="reviews-google" class="canva-button button button-dark" href="https://www.google.com/maps/place/USTA+ELLER+%7C+Montaj+%26+Tadilat+Hizmetleri/@40.976169,29.051032,109870m/data=!3m1!1e3!4m8!3m7!1s0x202f9a66a07ffc05:0x53ce4e69744315fb!8m2!3d40.976169!4d29.051032!9m1!1b1!16s%2Fg%2F11yswb8xks!17m2!4m1!1e3!18m1!1e1?entry=ttu" target="_blank" rel="noopener noreferrer" style="background: rgb(255, 255, 255); color: rgb(23, 25, 27); font-weight: 700;"></a>
+        </div>
+       </div>
+      </div>
+     </section>
+     <section id="duyurular" class="section section-soft">
+      <div class="site-width">
+       <div class="news-box">
+        <div>
+         <h2 data-template-id="newsletter-title" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 800; font-style: normal; font-size: 24px;">Duyurulardan haberdar olun</h2>
+         <p data-template-id="newsletter-text" class="canva-text" style="color: rgb(23, 25, 27); font-weight: 400; font-style: normal; font-size: 16px;">Hizmetler ve güncellemeler için e-bülten üyeliğine katılın.</p>
+        </div><a data-template-id="newsletter-button" class="canva-button button button-dark" href="https://ustaeller-uyelik.blogspot.com/p/uye-ol.html" target="_blank" rel="noopener noreferrer" style="background: rgb(23, 25, 27); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 16px;">E-bültene Abone Ol</a>
+       </div>
+      </div>
+     </section>
+    </div>
+    <section id="iletisim" class="section">
+     <div class="site-width contact-grid">
+      <div class="contact-info">
+       <p data-template-id="contact-tag" class="canva-text eyebrow" style="color: rgb(255, 196, 0); font-weight: 800; font-style: normal; font-size: 16px; letter-spacing: 0.1rem;">Hızlı Ulaşım</p>
+       <h2 data-template-id="contact-title" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 24px;">İletişime geçin</h2>
+       <p data-template-id="contact-text" class="canva-text" style="color: rgb(210, 215, 215); font-weight: 400; font-style: normal; font-size: 16px;">Hizmet ihtiyacınızı paylaşmak ve uygunluk bilgisini almak için doğrudan ulaşabilirsiniz.</p>
+       <div class="contact-list"><a href="tel:+905388398628"><i data-lucide="phone" aria-hidden="true"></i><span data-template-id="contact-phone-text" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 600; font-style: normal; font-size: 16px;">0538 839 86 28</span></a> <a href="mailto:info@usta-eller.com"><i data-lucide="mail" aria-hidden="true"></i><span data-template-id="contact-email-text" class="canva-text" style="color: rgb(89, 96, 103); font-weight: 400; font-style: normal; font-size: 14px;">info@usta-eller.com</span></a> <a href="https://www.usta-eller.com/iletisim" target="_blank" rel="noopener noreferrer"><i data-lucide="map-pin" aria-hidden="true"></i><span data-template-id="contact-address-text" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 600; font-style: normal; font-size: 16px;">İstanbul Anadolu Yakası mobil hizmet</span></a>
+       </div>
+      </div>
+            <div class="contact-buttons">
+       <a data-template-id="contact-whatsapp" class="canva-card contact-button whatsapp-card" href="https://wa.me/905388398628" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp üzerinden mesaj gönderin">
+        <span class="contact-brand-icon" aria-hidden="true">
+         <svg viewBox="0 0 32 32" role="img" aria-hidden="true"><path fill="currentColor" d="M16.02 3.2c-7.08 0-12.83 5.74-12.83 12.81 0 2.26.59 4.47 1.71 6.4L3.1 28.73l6.48-1.7a12.78 12.78 0 0 0 6.43 1.73h.01c7.07 0 12.82-5.75 12.82-12.82A12.77 12.77 0 0 0 16.02 3.2Zm0 23.2h-.01a10.35 10.35 0 0 1-5.27-1.44l-.38-.23-3.85 1.01 1.03-3.75-.25-.39a10.34 10.34 0 1 1 8.73 4.8Zm5.67-7.75c-.31-.16-1.82-.9-2.1-1-.28-.1-.49-.16-.7.16-.21.31-.8 1-.98 1.2-.18.21-.36.24-.67.08-.31-.16-1.29-.48-2.45-1.52-.9-.8-1.51-1.79-1.69-2.1-.18-.31-.02-.48.14-.64.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.53-.7-.54h-.6c-.21 0-.55.08-.83.39-.28.31-1.08 1.05-1.08 2.56s1.11 2.97 1.27 3.18c.16.21 2.19 3.35 5.31 4.7.74.32 1.32.51 1.77.65.74.24 1.41.2 1.94.12.59-.09 1.82-.74 2.08-1.45.26-.72.26-1.33.18-1.45-.08-.13-.29-.2-.6-.36Z"/></svg>
+        </span>
+        <strong data-template-id="contact-whatsapp-title">WhatsApp</strong>
+        <span data-template-id="contact-whatsapp-text">Mesaj gönderin</span>
+       </a>
+       <a data-template-id="contact-call" class="canva-card contact-button call-card" href="tel:+905388398628" aria-label="Telefon ile hemen arayın">
+        <span class="contact-brand-icon" aria-hidden="true"><i data-lucide="phone"></i></span>
+        <strong data-template-id="contact-call-title">Hemen Ara</strong>
+        <span data-template-id="contact-call-text">0538 839 86 28</span>
+       </a>
+       <a data-template-id="contact-email" class="canva-card contact-button email-card" href="mailto:info@usta-eller.com" aria-label="E-posta gönderin">
+        <span class="contact-brand-icon" aria-hidden="true"><i data-lucide="mail"></i></span>
+        <strong data-template-id="contact-email-title">E-posta</strong>
+        <span data-template-id="contact-email-text">info@usta-eller.com</span>
+       </a>
+      </div>
+     </div>
+    </section>
+   </main>
+   <footer>
+    <div class="site-width">
+     <div class="footer-grid">
+      <div>
+       <p data-template-id="footer-description" class="canva-text footer-description" style="color: rgb(191, 198, 197); font-weight: 400; font-style: normal; font-size: 14px;">İstanbul Anadolu Yakası’nda montaj, tadilat ve elektrik ihtiyaçlarında planlı, özenli ve doğrudan hizmet.</p>
+       <div class="socials"><a class="social" href="https://www.instagram.com/ustaeller_montaj/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i data-lucide="instagram"></i></a> <a class="social" href="https://www.youtube.com/@ustaellermontaj/shorts" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i data-lucide="youtube"></i></a> <a class="social" href="https://www.facebook.com/profile.php?id=61583401676345" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i data-lucide="facebook"></i></a> <a class="social" href="https://nsosyal.com/ustaellermontaj" target="_blank" rel="noopener noreferrer" aria-label="Nsosyal"><i data-lucide="share-2"></i></a>
+       </div>
+      </div>
+      <div>
+       <h2 data-template-id="footer-menu-title" class="canva-text footer-heading" style="color: rgb(255, 196, 0); font-weight: 700; font-style: normal; font-size: 24px;">Kurumsal</h2>
+       <nav class="footer-links" aria-label="Footer menü"><a data-template-id="footer-services" href="#hizmetlerimiz" style="color: rgb(216, 221, 221); font-weight: 500; font-style: normal; font-size: 16px;">Hizmetlerimiz</a> <a data-template-id="footer-about" href="https://www.usta-eller.com/hakkimizda" target="_blank" rel="noopener noreferrer" style="color: rgb(216, 221, 221); font-weight: 500; font-style: normal; font-size: 16px;">Hakkımızda</a> <a data-template-id="footer-contact" href="https://www.usta-eller.com/iletisim" target="_blank" rel="noopener noreferrer" style="color: rgb(216, 221, 221); font-weight: 500; font-style: normal; font-size: 16px;">İletişim</a> <a data-template-id="footer-reviews" href="https://www.usta-eller.com/musteri-yorumlari" target="_blank" rel="noopener noreferrer" style="color: rgb(216, 221, 221); font-weight: 500; font-style: normal; font-size: 16px;">Müşteri Yorumları</a> <a data-template-id="footer-news" href="https://www.usta-eller.com/duyurular-ve-guncellemeler" target="_blank" rel="noopener noreferrer" style="color: rgb(216, 221, 221); font-weight: 500; font-style: normal; font-size: 16px;">Duyurular</a>
+       </nav>
+      </div>
+      <div>
+       <h2 data-template-id="footer-contact-title" class="canva-text footer-heading" style="color: rgb(255, 196, 0); font-weight: 700; font-style: normal; font-size: 24px;">İletişim</h2>
+       <div class="footer-links"><a data-template-id="footer-phone" href="tel:+905388398628" style="color: rgb(216, 221, 221); font-weight: 500; font-style: normal; font-size: 16px;">0538 839 86 28</a> <a data-template-id="footer-email" href="mailto:info@usta-eller.com" style="color: rgb(216, 221, 221); font-weight: 500; font-style: normal; font-size: 16px;">info@usta-eller.com</a> <span data-template-id="footer-location" class="canva-text footer-contact" style="color: rgb(216, 221, 221); font-weight: 500; font-style: normal; font-size: 16px;">Pendik, Kartal, Maltepe, Tuzla</span>
+       </div>
+      </div>
+     </div>
+     <div class="footer-bottom">
+      <span data-template-id="copyright" class="canva-text" style="color: rgb(174, 181, 180); font-weight: 400; font-style: normal; font-size: 13px;">© 2023 / 2026 USTA ELLER • Tüm Hakları Saklıdır</span>
+     </div>
+    </div>
+   </footer>
+  </div>
   <script>
-    var v = document.getElementById('v');
-    v.src = window.innerWidth < 768 ? 'hero.mp4.mp4' : 'web.mp4.mp4';
-    v.play();
+    document.addEventListener("DOMContentLoaded", function () {
+      lucide.createIcons();
+
+      const announcement = document.getElementById("duyurular");
+      const announcementHome = announcement ? announcement.parentElement : null;
+      const announcementSlot = announcement ? document.createComment("announcement-slot") : null;
+      if (announcement && announcementHome && announcementSlot) {
+        announcementHome.insertBefore(announcementSlot, announcement);
+        const serviceGrid = document.querySelector(".service-grid");
+        const moveAnnouncement = function () {
+          const isMobile = window.matchMedia("(max-width: 620px)").matches;
+          if (isMobile && serviceGrid && announcement.parentElement !== serviceGrid) {
+            serviceGrid.appendChild(announcement);
+          } else if (!isMobile && announcement.parentElement !== announcementHome) {
+            announcementHome.insertBefore(announcement, announcementSlot.nextSibling);
+          }
+        };
+        moveAnnouncement();
+        window.addEventListener("resize", moveAnnouncement);
+      }
+
+      const contactInfo = document.querySelector(".contact-info");
+      const contactActions = document.createElement("div");
+      contactActions.className = "quick-contact-actions";
+      ["contact-call", "contact-email", "contact-whatsapp"].forEach(function (id) {
+        const link = document.querySelector('[data-template-id="' + id + '"]');
+        if (link) contactActions.appendChild(link);
+      });
+      if (contactInfo && contactActions.children.length) {
+        contactInfo.appendChild(contactActions);
+        const originalContactButtons = document.querySelector(".contact-buttons");
+        if (originalContactButtons) originalContactButtons.remove();
+      }
+
+      /* =========================================================
+         SLIDER — yumuşak geçiş, otomatik oynatma, dokunmatik destek
+         ========================================================= */
+      const slider = document.querySelector(".top-slider");
+      const slides = Array.from(slider.querySelectorAll(".slide"));
+      const dots = Array.from(slider.querySelectorAll(".slider-dot"));
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const backToTop = document.getElementById("back-to-top");
+      const AUTOPLAY_MS = 6500;
+      let current = 0;
+      let timer = null;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let videoPlaying = true;
+
+      function showSlide(index) {
+        current = (index + slides.length) % slides.length;
+        slides.forEach(function (slide, i) {
+          const active = i === current;
+          slide.classList.toggle("is-active", active);
+          slide.setAttribute("aria-hidden", String(!active));
+          dots[i].classList.toggle("is-active", active);
+          dots[i].setAttribute("aria-selected", String(active));
+        });
+      }
+
+      function stopTimer() {
+        if (timer) clearInterval(timer);
+        timer = null;
+      }
+
+      function startTimer() {
+        if (videoPlaying) return;
+        stopTimer();
+        timer = setInterval(function () { showSlide(current + 1); }, AUTOPLAY_MS);
+      }
+
+      dots.forEach(function (dot, i) {
+        dot.addEventListener("click", function () { showSlide(i); startTimer(); });
+      });
+
+      slider.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") { showSlide(current - 1); startTimer(); }
+        if (e.key === "ArrowRight") { showSlide(current + 1); startTimer(); }
+      });
+
+      /* Sadece gerçek fare olan cihazlarda hover ile dur */
+      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        slider.addEventListener("mouseenter", stopTimer);
+        slider.addEventListener("mouseleave", startTimer);
+      }
+      /* Klavye odağında dur; dokunma/tıklama odağı oynatmayı durdurmasın */
+      slider.addEventListener("focusin", function (e) {
+        if (e.target.matches && e.target.matches(":focus-visible")) stopTimer();
+      });
+      slider.addEventListener("focusout", startTimer);
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) stopTimer(); else startTimer();
+      });
+
+      /* Dokunmatik kaydırma */
+      slider.addEventListener("touchstart", function (e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+        stopTimer();
+      }, { passive: true });
+
+      slider.addEventListener("touchcancel", startTimer, { passive: true });
+      slider.addEventListener("touchend", function (e) {
+        const dx = e.changedTouches[0].screenX - touchStartX;
+        const dy = e.changedTouches[0].screenY - touchStartY;
+        if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy)) {
+          showSlide(dx > 0 ? current - 1 : current + 1);
+        }
+        startTimer();
+      }, { passive: true });
+
+      /* =========================================================
+         AÇILIŞ VİDEOSU: web'de web videosu, mobilde mobil video.
+         Video bitince (süresi kaç saniye olursa olsun) slider başlar.
+         ========================================================= */
+      const heroWrap = document.getElementById("heroVideoWrap");
+      const heroVideo = document.getElementById("heroVideo");
+      let videoFinished = false;
+
+      function finishVideo() {
+        if (videoFinished) return;
+        videoFinished = true;
+        videoPlaying = false;
+        heroVideo.pause();
+        heroWrap.classList.add("is-done");
+        dots[0].classList.remove("is-active");
+        void dots[0].offsetWidth;
+        showSlide(0);
+        startTimer();
+        setTimeout(function () { heroWrap.style.display = "none"; }, 1200);
+      }
+
+      heroVideo.src = window.innerWidth < 768 ? "hero.mp4.mp4" : "web.mp4.mp4";
+      heroVideo.addEventListener("ended", finishVideo);
+      heroVideo.addEventListener("error", finishVideo);
+      /* Video 30 sn içinde başlamazsa slider'ı bekletme */
+      const startGuard = setTimeout(finishVideo, 30000);
+      heroVideo.addEventListener("playing", function () { clearTimeout(startGuard); });
+      const playPromise = heroVideo.play();
+      if (playPromise && playPromise.catch) playPromise.catch(finishVideo);
+
+      function updateBackToTop() {
+        backToTop.classList.toggle("is-visible", window.scrollY > 420);
+      }
+      window.addEventListener("scroll", updateBackToTop, { passive: true });
+      backToTop.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+      });
+      updateBackToTop();
+
+      /* =========================================================
+         SCROLL REVEAL — soldan / sağdan / aşağıdan
+         ========================================================= */
+      const queue = [];
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+      function queueReveal(el, dir, delay) {
+        if (el) queue.push({ el: el, dir: dir, delay: delay || 0 });
+      }
+
+      function gridReveal(selector) {
+        document.querySelectorAll(selector).forEach(function (grid) {
+          const cols = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
+          const cards = Array.from(grid.children).filter(function (c) {
+            return c.matches(".quick-card, .service-card, article");
+          });
+          cards.forEach(function (card, i) {
+            const col = i % cols;
+            const dir = cols === 1 ? "up" : col === 0 ? "left" : col === cols - 1 ? "right" : "up";
+            queueReveal(card, dir, col * 90);
+          });
+        });
+      }
+
+      gridReveal(".quick-grid");
+      gridReveal(".service-grid");
+      gridReveal(".seo-grid");
+
+      document.querySelectorAll(".section-intro").forEach(function (el) { queueReveal(el, "up"); });
+      queueReveal(document.querySelector(".about-image"), "left");
+      queueReveal(document.querySelector(".about-grid > div"), "right", 120);
+      queueReveal(document.querySelector("#yorumlar .reviews-panel"), "left");
+      queueReveal(document.querySelector("#duyurular .news-box"), "right", 120);
+      queueReveal(document.querySelector(".contact-info"), "up");
+      document.querySelectorAll(".footer-grid > div").forEach(function (el, i) {
+        queueReveal(el, "up", i * 100);
+      });
+
+      if (!reduceMotion && "IntersectionObserver" in window) {
+        const io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const delay = parseInt(el.style.transitionDelay, 10) || 0;
+            io.unobserve(el);
+            requestAnimationFrame(function () { el.classList.add("scroll-visible"); });
+            setTimeout(function () {
+              el.classList.remove("reveal", "scroll-visible");
+              el.removeAttribute("data-reveal");
+              el.style.transitionDelay = "";
+            }, 2100 + delay);
+          });
+        }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+
+        queue.forEach(function (q) {
+          q.el.classList.add("reveal");
+          q.el.setAttribute("data-reveal", isMobile ? "up" : q.dir);
+          q.el.style.transitionDelay = (isMobile ? Math.min(q.delay, 90) : q.delay) + "ms";
+          io.observe(q.el);
+        });
+      }
+    });
   </script>
-</body>
-</html>
+</body></html>
